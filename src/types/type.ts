@@ -5,7 +5,7 @@ export interface Office {
     name: string;
     slug: string;
     city: City,
-    thumbnails: string;
+    thumbnail: string;
     photos: Photo[];
     benefits: Benefit[];
     about: string;
