@@ -3,9 +3,10 @@ import CityCard from "../components/CityCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { City } from "../types/type";
+import { Link } from "react-router-dom";
 
 export default function BrowseCityWrapper() {
-  const [cities, setCities] = useState<City []>([]);
+  const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +29,7 @@ export default function BrowseCityWrapper() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error {error}</p>;
-  
+
   return (
     <section id="Cities" className="flex flex-col gap-[30px] mt-[100px]">
       <div className="w-full max-w-[1130px] mx-auto flex items-center justify-between">
@@ -52,12 +53,15 @@ export default function BrowseCityWrapper() {
             slidesOffsetAfter={30}
             slidesOffsetBefore={30}
           >
-
             {cities.map((city) => (
-
-              <SwiperSlide key={city.id} className="!w-fit first-of-type:pl-[calc((100%-1130px-60px)/2)] last-of-type:pr-[calc((100%-1130px-60px)/2)]">
-              <CityCard city={city}></CityCard>
-            </SwiperSlide>
+              <SwiperSlide
+                key={city.id}
+                className="!w-fit first-of-type:pl-[calc((100%-1130px-60px)/2)] last-of-type:pr-[calc((100%-1130px-60px)/2)]"
+              >
+                <Link to={`/city/${city.slug}`}>
+                  <CityCard city={city}></CityCard>
+                </Link>
+              </SwiperSlide>
             ))}
           </Swiper>
         </div>
