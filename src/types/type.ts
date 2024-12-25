@@ -13,7 +13,7 @@ export interface Office {
 
 interface Photo {
     id: number;
-    name: string;
+    photo: string;
 }
 
 interface Benefit {

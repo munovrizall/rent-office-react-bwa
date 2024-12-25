@@ -1,39 +1,73 @@
+import { Swiper, SwiperSlide } from "swiper/react";
 import Navbar from "../components/NavBar";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Office } from "../types/type";
 
 export default function Details() {
+  const { slug } = useParams<{ slug: string }>();
+  const [offices, setOffices] = useState<Office | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    axios
+      .get(`http://127.0.0.1:8000/api/office/${slug}`, {
+        headers: {
+          "X-API-KEY": "smartkey",
+        },
+      })
+      .then((response) => {
+        setOffices(response.data.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+  }, [slug]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error {error}</p>;
+  if (!offices) return <p>Office not found</p>;
+
+  const baseURL = "http://127.0.0.1:8000/storage/";
+
   return (
     <>
       <Navbar></Navbar>
       <section id="Gallery" className="-mb-[50px]">
         <div className="swiper w-full">
           <div className="swiper-wrapper">
-            <div className="swiper-slide !w-fit">
-              <div className="w-[700px] h-[550px] overflow-hidden">
-                <img
-                  src="/assets/images/thumbnails/thumbnail-details-1.png"
-                  className="w-full h-full object-cover"
-                  alt="thumbnail"
-                />
-              </div>
-            </div>
-            <div className="swiper-slide !w-fit">
-              <div className="w-[700px] h-[550px] overflow-hidden">
-                <img
-                  src="/assets/images/thumbnails/thumbnail-details-2.png"
-                  className="w-full h-full object-cover"
-                  alt="thumbnail"
-                />
-              </div>
-            </div>
-            <div className="swiper-slide !w-fit">
-              <div className="w-[700px] h-[550px] overflow-hidden">
-                <img
-                  src="/assets/images/thumbnails/thumbnail-details-3.png"
-                  className="w-full h-full object-cover"
-                  alt="thumbnail"
-                />
-              </div>
-            </div>
+            <Swiper
+              direction="horizontal"
+              spaceBetween={0}
+              slidesPerView="auto"
+              slidesOffsetAfter={0}
+              slidesOffsetBefore={0}
+            >
+              <SwiperSlide className="!w-fit">
+                <div className="w-[700px] h-[550px] overflow-hidden">
+                  <img
+                    src={`${baseURL}${offices.thumbnail}`}
+                    className="w-full h-full object-cover"
+                    alt="thumbnail"
+                  />
+                </div>
+              </SwiperSlide>
+              {offices.photos.map((photo) => (
+                <SwiperSlide key={photo.id} className="!w-fit">
+                  <div className="w-[700px] h-[550px] overflow-hidden">
+                    <img
+                      src={`${baseURL}${photo.photo}`}
+                      className="w-full h-full object-cover"
+                      alt="thumbnail"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       </section>
@@ -48,7 +82,7 @@ export default function Details() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-extrabold text-[32px] leading-[44px]">
-                Angga Park Central <br /> Master Capitalize
+                {offices.name}
               </h1>
               <div className="flex items-center gap-[6px] mt-[10px]">
                 <img
@@ -56,7 +90,7 @@ export default function Details() {
                   className="w-6 h-6"
                   alt="icon"
                 />
-                <p className="font-semibold">Jakarta Pusat</p>
+                <p className="font-semibold">{offices.city.name}</p>
               </div>
             </div>
             <div className="flex flex-col gap-[6px]">
@@ -90,13 +124,7 @@ export default function Details() {
               <p className="font-semibold text-right">4.5/5 (19,384)</p>
             </div>
           </div>
-          <p className="leading-[30px]">
-            Whether you need quite private space away from the distractions of
-            an at-times chaotic home office, you’re on a team that needs to
-            brainstorm and collaborate in person, or you’re owner meeting with
-            prospective hires, clients, and partners, having access to hundreds
-            of workspaces can be a game-changing resource.
-          </p>
+          <p className="leading-[30px]">{offices.about}</p>
           <hr className="border-[#F6F5FD]" />
           <h2 className="font-bold">You Get What You Need Most</h2>
           <div className="grid grid-cols-3 gap-x-5 gap-y-[30px]">
@@ -172,8 +200,8 @@ export default function Details() {
           <hr className="border-[#F6F5FD]" />
           <div className="flex flex-col gap-[6px]">
             <h2 className="font-bold">Office Address</h2>
-            <p>Angga Park Central Master Capitalize</p>
-            <p>BLDG E16, 13 Xicheng District, Beijing, China, 100000</p>
+            <p>{offices.name}</p>
+            <p>{offices.city.name}</p>
           </div>
           <div className="overflow-hidden w-full h-[280px]">
             <div
@@ -199,43 +227,28 @@ export default function Details() {
           <div className="flex flex-col rounded-[20px] border border-[#E0DEF7] p-[30px] gap-[30px] bg-white">
             <div>
               <p className="font-extrabold text-[32px] leading-[48px] text-[#0D903A]">
-                Rp 18.540.000
+                Rp {offices.price.toLocaleString()}
               </p>
-              <p className="font-semibold mt-1">For 20 days working</p>
+              <p className="font-semibold mt-1">
+                For {offices.duration} days working
+              </p>
             </div>
             <hr className="border-[#F6F5FD]" />
             <div className="flex flex-col gap-5">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/assets/images/icons/verify.svg"
-                  className="w-[30px] h-[30px]"
-                  alt="icon"
-                />
-                <p className="font-semibold leading-[28px]">
-                  Mendapatkan akses pembelajaran terbaru terkait dunia startup
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <img
-                  src="/assets/images/icons/verify.svg"
-                  className="w-[30px] h-[30px]"
-                  alt="icon"
-                />
-                <p className="font-semibold leading-[28px]">
-                  Mendapatkan akses pembelajaran terbaru terkait dunia startup
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <img
-                  src="/assets/images/icons/verify.svg"
-                  className="w-[30px] h-[30px]"
-                  alt="icon"
-                />
-                <p className="font-semibold leading-[28px]">
-                  Mendapatkan akses pembelajaran terbaru terkait dunia startup
-                </p>
-              </div>
+              {offices.benefits.map((benefit) => (
+                <div key={benefit.id} className="flex items-center gap-3">
+                  <img
+                    src="/assets/images/icons/verify.svg"
+                    className="w-[30px] h-[30px]"
+                    alt="icon"
+                  />
+                  <p className="font-semibold leading-[28px]">
+                    {benefit.name}
+                  </p>
+                </div>
+              ))}
             </div>
+
             <hr className="border-[#F6F5FD]" />
             <div className="flex flex-col gap-[14px]">
               <a
