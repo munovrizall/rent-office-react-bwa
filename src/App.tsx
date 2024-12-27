@@ -8,7 +8,7 @@ import Details from "./pages/Details";
 import BookOffice from "./pages/BookOffice";
 import CityDetails from "./pages/CityDetails";
 import SuccessBooking from "./pages/SuccessBooking";
-import CheckBooking from "./pages/CheckBooling";
+import CheckBooking from "./pages/CheckBooking";
 
 function App() {
 

@@ -76,14 +76,14 @@ export default function BookOffice() {
       [e.target.name]: e.target.value,
     });
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     console.log("Validating form data");
     const validation = bookingSchema.safeParse(formData);
 
-    if(!validation.success) {
+    if (!validation.success) {
       console.error("Validation error:", validation.error.errors);
       setFormErrors(validation.error.issues);
       return;
@@ -102,7 +102,7 @@ export default function BookOffice() {
         {
           headers: {
             "X-API-KEY": "smartkey",
-          }
+          },
         }
       );
 
@@ -111,8 +111,8 @@ export default function BookOffice() {
       navigate("/success-booking", {
         state: {
           office,
-          booking: response.data,
-        }
+          booking: response.data.data,
+        },
       });
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -123,7 +123,7 @@ export default function BookOffice() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -142,7 +142,7 @@ export default function BookOffice() {
         />
       </div>
       <form
-        action="booking-finished.html"
+        onSubmit={handleSubmit}
         className="relative flex justify-center max-w-[1130px] mx-auto gap-[30px] mb-20 z-20"
       >
         <div className="flex flex-col shrink-0 w-[500px] h-fit rounded-[20px] border border-[#E0DEF7] p-[30px] gap-[30px] bg-white">
